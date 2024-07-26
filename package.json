@@ -2,7 +2,7 @@
   "name": "ATCopier",
   "displayName": "ActiveTabsCopier",
   "description": "Automatically copies the name and content of your active tabs in VS code.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.91.0"
   },

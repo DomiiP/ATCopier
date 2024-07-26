@@ -2,24 +2,20 @@ import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
     let disposable = vscode.commands.registerCommand('extension.copyOpenTabs', async () => {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            vscode.window.showErrorMessage('No active editor');
-            return;
+        try {
+            const openTabs = vscode.workspace.textDocuments;
+            const formattedContents = openTabs.map(doc => {
+                const fileName = doc.fileName.split('\\').pop();
+                const fileContent = doc.getText().replace(/"/g, '\\"');
+                return `${fileName}: "${fileContent}"`;
+            }).join(', ');
+
+            await vscode.env.clipboard.writeText(formattedContents);
+            vscode.window.showInformationMessage('Copied content of open tabs to clipboard!');
+        } catch (error) {
+            console.error('Error copying open tabs:', error);
+            vscode.window.showErrorMessage('Failed to copy open tabs. Check console for details.');
         }
-
-        const openTabs = vscode.window.visibleTextEditors;
-        let result = '';
-
-        for (const tab of openTabs) {
-            const document = tab.document;
-            const fileName = document.fileName.split('/').pop();
-            const fileContent = document.getText();
-            result += `${fileName}:${fileContent}\n`;
-        }
-
-        await vscode.env.clipboard.writeText(result);
-        vscode.window.showInformationMessage('Copied code from open tabs to clipboard');
     });
 
     context.subscriptions.push(disposable);

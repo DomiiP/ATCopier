@@ -1,14 +1,17 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
+    console.log('ATCopier extension is now active!');
+
     let disposable = vscode.commands.registerCommand('extension.copyOpenTabs', async () => {
         try {
+            console.log('Command copyOpenTabs triggered');
             const openTabs = vscode.workspace.textDocuments;
             const formattedContents = openTabs.map(doc => {
-                const fileName = doc.fileName.split('\\').pop();
+                const fileName = doc.fileName.split('/').pop() || doc.fileName.split('\\').pop();
                 const fileContent = doc.getText().replace(/"/g, '\\"');
-                return `${fileName}: "${fileContent}"`;
-            }).join(', ');
+                return `${fileName}:\n${fileContent}`;
+            }).join('\n\n');
 
             await vscode.env.clipboard.writeText(formattedContents);
             vscode.window.showInformationMessage('Copied content of open tabs to clipboard!');
@@ -21,4 +24,6 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-export function deactivate() {}
+export function deactivate() {
+    console.log('ATCopier extension is now deactivated');
+}
